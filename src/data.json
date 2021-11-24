@@ -1,0 +1,4 @@
+[{"label":"--Any Table Game--","value": "AnyTable"},{"label":"Blackjack", "value": "Blackjack"},{"label":"Craps", "value": "Craps"},{"label":"Roulette", "value": "Roulette"},{"label":"Poker (Texas Hold'em)", "value": "Poker"},
+    {"label":"--Any Video Game--","value": "AnyVideo"},{"label":"Slot Machine", "value": "Slots"},{"label":"Video Poker", "value": "Video Poker"}
+]
+
