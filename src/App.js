@@ -55,7 +55,11 @@ function App() {
   }
  
   //pre-select United States
-  useEffect(()=>{setCountryValue({value: 'US', label: 'United States'})},[])
+  useEffect(()=>{
+    setCountryValue({value: 'US', label: 'United States'});
+    setGameValue({value:"AnyTable",label: "--Any Table Game--"});
+  
+  },[])
 
   //Give the menu drop downs a custom look
   const customStyles = {
@@ -88,9 +92,9 @@ function App() {
         const user = await app.logIn(credentials);
         // `App.currentUser` updates to match the logged in user
         assert(user.id === app.currentUser.id);
-        const payload={name:name_value,location:country_value, game:game_value}
+        const payload={name:name_value,location:country_value.label, game:game_value.value}
       const WTC = await user.functions.WriteToCluster(payload);
-      console.log(JSON.stringify(WTC));
+      console.log(JSON.stringify(payload));
 
         //return user
       } catch(err) {
@@ -138,7 +142,7 @@ function App() {
    <p className="InstructionsCss">---TODO: insert picture of the data flow here--</p>
    </Container>
    <Container className="p-1 mb-2 border-dark">
-   { hideSubmit ? <div><img src={spinner} class="spinnerCss" alt="loading..." />&nbsp;Writing to MongoDB Atlas</div> : <div> { beforeSubmit ? <Button  variant="primary" size="lg" className="btn-lg btn-block" onClick={SubmitToRealm}>&nbsp;&nbsp;&nbsp;&nbsp;Submit my entry!&nbsp;&nbsp;&nbsp;&nbsp;</Button>:<DisplayReports/>  } </div> } 
+   { hideSubmit ? <div><img src={spinner} className="spinnerCss" alt="loading..." />&nbsp;Writing to MongoDB Atlas</div> : <div> { beforeSubmit ? <Button  variant="primary" size="lg" className="btn-lg btn-block" onClick={SubmitToRealm}>&nbsp;&nbsp;&nbsp;&nbsp;Submit my entry!&nbsp;&nbsp;&nbsp;&nbsp;</Button>:<DisplayReports/>  } </div> } 
 
    </Container>
    </header>
