@@ -1,11 +1,11 @@
 import logo from './MongoDB_Logo.svg';
 import './App.css';
 import games from './data.json'
-import React, { useState, useMemo, useEffect, useRef} from 'react';
+import React, { useState, useMemo, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { Carousel } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import * as Realm from "realm-web";
@@ -38,7 +38,6 @@ return (<div>
 </div>)}*/
 
 function App() {
-  const ChartRef = useRef(null)
   const [country_value, setCountryValue] = useState('')
   const [game_value, setGameValue] = useState('')
   const [name_value, setName]=useState('')
@@ -53,10 +52,7 @@ function App() {
   const GameChangeHandler = game_value => {
     setGameValue(game_value)
   }
-  const ScrollChartIntoView = () => {
-   //  (ChartRef)?ChartRef.current.scrollIntoView():''\
-    
-    }   
+  
  
   //pre-select United States
   useEffect(()=>{
@@ -67,28 +63,46 @@ function App() {
   const DisplayReports=()=> {
   //console.log('chart=' + JSON.stringify(chart_list));
 
-  return (<div ref={ChartRef}>
+  return (<div>
+          <Container className="p-1 mb-2 bg-light border-dark">
+      <div className="d-flex flex-column bd-highlight mb-3">
+      <div className="p-2 bd-highlight"><img src={logo} className="M-logo" alt="logo" /></div>
+      <div className="p-2 bd-highlight text-dark"><h1>Data movement with MongoDB Atlas and the Confluent Cloud</h1></div>
+      <div className="p-2 bd-highlight"><img src='confluent-logo.png' alt="logo2" className="C-logo"/></div>
+      </div>
+   </Container>
 
-       {JSON.parse(chart_list).map((chart, index) => (<Carousel>
-  <Carousel.Item key={index.toString()}>
-  <iframe width="640" height="480" title={chart.title} src={chart.url}></iframe>
-     <Carousel.Caption>
-      <h3>{chart.title}</h3>
-      <p>{chart.description}</p>
-    </Carousel.Caption>
-  </Carousel.Item>
-  </Carousel>))}
+
+       {JSON.parse(chart_list).map((chart, index) => (
+      
+       <div><Card style={{background:'#282c34', alignItems: 'center'}}>
+       <Card.Header>{chart.title}</Card.Header>
+       <iframe width="640" height="480" title={chart.title} src={chart.url}></iframe>
+     </Card><br/><br/></div>
+       
+      ))}
   
   <div className='resourcesCss'>
-  <p>Resources:<br/><br/>MongoDB Atlas<br/>
-  MongoDB Realm</p>
-  <p>MongoDB Connector for Apache Kafka</p>
+  <p><u>Resources:</u><br/><br/><a href="https://www.mongodb.com/atlas/database">MongoDB Atlas</a></p>
+  <p><a href="https://docs.mongodb.com/realm/cloud/">MongoDB Realm Applicatiom Services</a></p>
+  <p><a href="https://www.mongodb.com/products/charts">MongoDB Charts</a></p>
+  <p><a href="https://docs.mongodb.com/kafka-connector/current/">MongoDB Connector for Apache Kafka</a></p>
+  <p><a href="https://docs.confluent.io/cloud/current/connectors/cc-mongo-db-source.html">MongoDB Atlas Source Connector for Confluent Cloud</a></p>
+  <p><a href="https://docs.confluent.io/cloud/current/connectors/cc-mongo-db-sink.html">MongoDB Atlas Sink Connector for Confluent Cloud</a></p>
+  <p><a href="https://www.mongodb.com/blog/post/data-movement-from-oracle-mongodb-made-easy-apache-kafka">Blog: Migrate from Oracle to MongoDB via Apache Kafka</a></p>
+  <p><a href="https://www.mongodb.com/blog/post/streaming-time-series-data-using-apache-kafka-mongodb">Blog: Streaming Time-Series Data Using Apache Kafka and MongoDB</a></p>
+  <p><a href="https://www.mongodb.com/blog/post/how-to-get-started-with-mongodb-atlas-and-confluent-cloud">Blog: How to Get Started with MongoDB Atlas and Confluent Cloud</a></p>
+  <p><a href="https://www.youtube.com/watch?v=ZC0sjS4bVpo">Video: MongoDB and Apache Kafka Overview</a></p>
+  <p><a href="https://www.youtube.com/watch?v=_6NuTTQdDn4">Video: MongoDB Connector for Apache Kafka Demo</a></p>
   <br/>
-  <p>Questions?<br/><br/> MongoDB Community Alias<br/></p>
+  <p><u>Questions?</u><br/><br/><p><a href="https://www.mongodb.com/community/forums/c/data/connectors-integrations/48">Forum: Connectors and Integrators</a></p></p>
+  <p><a href="https://www.linkedin.com/in/robwaltersprofile/">LinkedIn: Robert Walters</a></p>
+
   </div>
 
     </div>)}
 
+//Styles
   //Give the menu drop downs a custom look
   const customStyles = {
     menu: (provided, state) => ({
@@ -110,6 +124,8 @@ function App() {
     }
 
   }
+
+
     async function SubmitToRealm() {
       setHideSubmit(true);
       const app = new Realm.App({ id: "surveyapp-jchvd" });
@@ -126,7 +142,6 @@ function App() {
         //Load available charts
         const charts = await user.functions.GetAvailableCharts();
         setChartList(JSON.stringify(charts));
-        ScrollChartIntoView();
        // console.log(JSON.stringify(charts));
         //return user
       } catch(err) {
@@ -185,3 +200,13 @@ function App() {
 }
 
 export default App;
+/*
+ <Carousel>
+  <Carousel.Item key={index.toString()}>
+  <iframe width="640" height="480" title={chart.title} src={chart.url}></iframe>
+     <Carousel.Caption>
+      <h3>{chart.title}</h3>
+      <p>{chart.description}</p>
+    </Carousel.Caption>
+  </Carousel.Item>
+  </Carousel>*/
