@@ -1,7 +1,7 @@
 import logo from './MongoDB_Logo.svg';
 import './App.css';
 import games from './data.json'
-import React, { useState, useMemo, useEffect} from 'react';
+import React, { useState, useMemo, useEffect, useRef} from 'react';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -12,39 +12,39 @@ import * as Realm from "realm-web";
 import assert from 'assert';
 import spinner from './loading.gif'
 
+/*
 function DisplayReports() {
 
-return (<div>Live charts will go here...<br/><Carousel>
+  // call stitch function to grab list of charts
+
+return (<div>
+<iframe width="640" height="480" src="https://charts.mongodb.com/charts-rob-w-cmeqz/embed/charts?id=9a42c7c7-dd45-4167-b29a-8f6795a113dc&maxDataAge=3600&theme=dark&autoRefresh=false"></iframe>
+<Carousel>
 <Carousel.Item>
   <img width={900} height={500} alt="900x500" src="/carousel.png" />
   <Carousel.Caption>
-    <h3>First slide label</h3>
-    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+    <h3>Country of Origin</h3>
+    <p>This chart shows you a map of the attendees</p>
   </Carousel.Caption>
 </Carousel.Item>
 <Carousel.Item>
   <img width={900} height={500} alt="900x500" src="/carousel.png" />
   <Carousel.Caption>
-    <h3>Second slide label</h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-  </Carousel.Caption>
-</Carousel.Item>
-<Carousel.Item>
-  <img width={900} height={500} alt="900x500" src="/carousel.png" />
-  <Carousel.Caption>
-    <h3>Third slide label</h3>
-    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+    <h3>Most popular games</h3>
+    <p>This chart shows most popular games per attendees</p>
   </Carousel.Caption>
 </Carousel.Item>
 </Carousel>
-</div>)}
+</div>)}*/
 
 function App() {
+  const ChartRef = useRef(null)
   const [country_value, setCountryValue] = useState('')
   const [game_value, setGameValue] = useState('')
   const [name_value, setName]=useState('')
   const [hideSubmit, setHideSubmit] = useState(false);
   const [beforeSubmit, setBeforeSubmit] = useState(true); // when true user hasn't submitted yet
+  const [chart_list, setChartList]=useState([{}])
   const country_options = useMemo(() => countryList().getData(), [])
   const CountryChangeHandler = country_value => {
     //console.log(country_value);
@@ -53,13 +53,41 @@ function App() {
   const GameChangeHandler = game_value => {
     setGameValue(game_value)
   }
+  const ScrollChartIntoView = () => {
+   //  (ChartRef)?ChartRef.current.scrollIntoView():''\
+    
+    }   
  
   //pre-select United States
   useEffect(()=>{
     setCountryValue({value: 'US', label: 'United States'});
     setGameValue({value:"AnyTable",label: "--Any Table Game--"});
-  
   },[])
+
+  const DisplayReports=()=> {
+  //console.log('chart=' + JSON.stringify(chart_list));
+
+  return (<div ref={ChartRef}>
+
+       {JSON.parse(chart_list).map((chart, index) => (<Carousel>
+  <Carousel.Item key={index.toString()}>
+  <iframe width="640" height="480" title={chart.title} src={chart.url}></iframe>
+     <Carousel.Caption>
+      <h3>{chart.title}</h3>
+      <p>{chart.description}</p>
+    </Carousel.Caption>
+  </Carousel.Item>
+  </Carousel>))}
+  
+  <div className='resourcesCss'>
+  <p>Resources:<br/><br/>MongoDB Atlas<br/>
+  MongoDB Realm</p>
+  <p>MongoDB Connector for Apache Kafka</p>
+  <br/>
+  <p>Questions?<br/><br/> MongoDB Community Alias<br/></p>
+  </div>
+
+    </div>)}
 
   //Give the menu drop downs a custom look
   const customStyles = {
@@ -93,9 +121,13 @@ function App() {
         // `App.currentUser` updates to match the logged in user
         assert(user.id === app.currentUser.id);
         const payload={name:name_value,location:country_value.label, game:game_value.value}
-      const WTC = await user.functions.WriteToCluster(payload);
-      console.log(JSON.stringify(payload));
-
+        const WTC = await user.functions.WriteToCluster(payload);
+        //console.log(JSON.stringify(payload));
+        //Load available charts
+        const charts = await user.functions.GetAvailableCharts();
+        setChartList(JSON.stringify(charts));
+        ScrollChartIntoView();
+       // console.log(JSON.stringify(charts));
         //return user
       } catch(err) {
         setHideSubmit(false);
@@ -110,9 +142,9 @@ function App() {
     }
 
   return (
-
-    <div className="App">
-      <header className="App-header">
+    <div className="App-header">
+      { (hideSubmit===false && beforeSubmit===false) ? <div className='summaryCss'><DisplayReports/></div>:
+      <header>
       <Container className="p-1 mb-2 bg-light border-dark">
       <div className="d-flex flex-column bd-highlight mb-3">
       <div className="p-2 bd-highlight"><img src={logo} className="M-logo" alt="logo" /></div>
@@ -142,11 +174,11 @@ function App() {
    <p className="InstructionsCss">---TODO: insert picture of the data flow here--</p>
    </Container>
    <Container className="p-1 mb-2 border-dark">
-   { hideSubmit ? <div><img src={spinner} className="spinnerCss" alt="loading..." />&nbsp;Writing to MongoDB Atlas</div> : <div> { beforeSubmit ? <Button  variant="primary" size="lg" className="btn-lg btn-block" onClick={SubmitToRealm}>&nbsp;&nbsp;&nbsp;&nbsp;Submit my entry!&nbsp;&nbsp;&nbsp;&nbsp;</Button>:<DisplayReports/>  } </div> } 
+   { hideSubmit ? <div><img src={spinner} className="spinnerCss" alt="loading..." />&nbsp;Writing to MongoDB Atlas</div> : <div> { beforeSubmit ? <Button  variant="primary" size="lg" className="btn-lg btn-block" onClick={SubmitToRealm}>&nbsp;&nbsp;&nbsp;&nbsp;Submit my entry!&nbsp;&nbsp;&nbsp;&nbsp;</Button>:''  } </div> } 
 
    </Container>
    </header>
-
+}
     </div>
 
   );
